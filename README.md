@@ -1,4 +1,4 @@
-# Cybersecurity Portfolio - [Salvador Janthan]
+# Labs Portfolio - [Salvador Janthan]
 ## Security+ Certified | SOC Analyst | Threat Hunter
 
 ### 📋 About Me
