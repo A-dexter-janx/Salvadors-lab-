@@ -1,81 +1,149 @@
 # Cybersecurity Portfolio - Salvador Janthan
 ## Security+ Candidate | SOC Analyst | Threat Hunter
 
+A hands-on cybersecurity portfolio demonstrating practical skills across SIEM deployment, network security, vulnerability management, threat hunting, incident response, and security automation.
+
+---
+
 ### 📋 About Me
-Cybersecurity student and practitioner focused on defensive security, SOC operations, and threat hunting. Building practical skills through hands-on labs in SIEM deployment, network security, vulnerability management, and incident response. Working toward CompTIA Security+ certification.
+
+Cybersecurity student and practitioner focused on defensive security, SOC operations, and threat hunting. I build practical skills through hands-on labs — deploying SIEM tools, designing network security controls, running vulnerability scans, writing detection rules, and automating security tasks with Python. Currently working toward CompTIA Security+ certification.
 
 ### 🔧 Technical Skills
-- **SIEM Tools:** Splunk, Elastic Stack, Sentinel
-- **Networking:** Firewall config (pfSense), packet analysis (Wireshark), network segmentation
-- **OS Security:** Windows/Linux hardening, log analysis, forensic artifacts
-- **Scripting:** Python, PowerShell, Bash
-- **Vulnerability Management:** Nessus, OpenVAS, Nmap, remediation planning
-- **Threat Hunting:** Sigma rules, YARA signatures, MITRE ATT&CK mapping
+
+| Category | Tools & Technologies |
+|----------|---------------------|
+| **SIEM** | Splunk Free, Elastic Stack (ELK), Microsoft Sentinel |
+| **Network Security** | pfSense firewall, Wireshark, VLAN segmentation, ACL design |
+| **OS Hardening** | Windows & Linux, group policy, log analysis, Sysmon, audit policies |
+| **Vulnerability Management** | Nessus Essentials, OpenVAS, Nmap, CVSS triage, remediation planning |
+| **Threat Hunting** | Sigma rules, YARA signatures, MITRE ATT&CK mapping, IOC extraction |
+| **Scripting** | Python, Bash, PowerShell |
+| **Incident Response** | NIST SP 800-61 lifecycle, forensic timeline reconstruction, malware triage |
+
+---
 
 ### 🚀 Featured Projects
 
 #### 1. SIEM Home Lab
-- Built Splunk instance with custom alerts for brute force attacks
-- Created Kibana dashboards for real-time monitoring
-- [Link to detailed write-up](./02-SIEM-Projects/)
+Built a home-lab SIEM stack using Splunk Free and the Elastic Stack (ELK). Ingesting Windows Event Logs via Winlogbeat, DNS query logs, and firewall logs. Developed custom detection alerts including brute-force SSH/RDP detection and malware C2 domain pattern matching. Created Kibana dashboards for real-time monitoring and visibility.
+
+| Deliverable | File |
+|-------------|------|
+| Brute-force detection SPL | `02-SIEM-Projects/splunk-alert-config/brute-force-detection.spl` |
+| Malware C2 alert SPL | `02-SIEM-Projects/splunk-alert-config/malware-c2-alert.spl` |
+| Winlogbeat forwarder config | `02-SIEM-Projects/elastic-stack/winlogbeat-config.yml` |
+| Kibana index dashboard export | `02-SIEM-Projects/elastic-stack/kibana-dashboard-export.json` |
 
 #### 2. Network Security Lab
-- Configured pfSense firewall with custom rules
-- Performed Wireshark packet capture analysis
-- Documented network segmentation architecture
-- [Link to network security files](./01-Network-Security/)
+Configured a pfSense edge firewall with custom ACLs across WAN, LAN, and DMZ interfaces. Documented the full rule set with rationale for each entry. Captured and analyzed live traffic with Wireshark to validate rule behavior and identify protocol patterns. Mapped the lab network topology showing segmentation between zones.
+
+| Deliverable | File |
+|-------------|------|
+| pfSense rule documentation | `01-Network-Security/firewall-rules-pfsense.md` |
+| Wireshark capture analysis | `01-Network-Security/wireshark-capture-analysis.pcapng` |
+| Network topology diagram | `01-Network-Security/network-diagram.png` |
 
 #### 3. Vulnerability Management
-- Developed comprehensive Nmap scanning script
-- Ran Nessus vulnerability scans against lab targets
-- Produced remediation recommendations based on findings
-- [Link to vuln management tools](./04-Vulnerability-Management/)
+Ran credentialed Nessus scans against lab targets and triaged findings by CVSS severity. Identified high-priority issues including SMBv1 enabled (EternalBlue exposure), weak TLS cipher suites, and missing Windows patches. Produced a prioritized remediation plan with specific actions for each finding. Built a comprehensive Nmap scanning script for repeatable network assessment.
+
+| Deliverable | File |
+|-------------|------|
+| Nessus findings & analysis | `04-Vulnerability-Management/nessus-report-analysis.md` |
+| Remediation action plan | `04-Vulnerability-Management/remediation-recommendations.docx` |
+| Comprehensive Nmap scan script | `04-Vulnerability-Management/nmap-scan-scripts/comprehensive-scan.sh` |
 
 #### 4. Python Security Tools
-- Port scanner (multi-threaded TCP connect)
-- Log analyzer (failed logins, sudo usage, HTTP errors)
-- File hash checker (MD5/SHA256/SHA512)
-- [Link to Python tools](./06-Python-Tools/)
+Three functional security automation scripts: a multi-threaded TCP port scanner with common-port service mapping, a log analyzer that detects failed logins, sudo usage, HTTP 5xx errors, and suspicious patterns, and a file hash checker supporting MD5/SHA1/SHA256/SHA512 with known-hash verification.
+
+| Deliverable | File | Description |
+|-------------|------|-------------|
+| Port scanner | `06-Python-Tools/port-scanner.py` | Threaded TCP connect scan, range or comma-list ports |
+| Log analyzer | `06-Python-Tools/log-analyzer.py` | Failed logins, sudo, HTTP errors, suspicious patterns |
+| Hash checker | `06-Python-Tools/hash-checker.py` | Multi-algorithm hashing, known-hash verification |
 
 #### 5. Threat Hunting
-- Wrote Sigma detection rules (PowerShell encoded commands, lateral movement)
-- Created YARA malware signature rule
-- [Link to threat hunting rules](./03-Threat-Hunting/)
+Authored Sigma detection rules for suspicious PowerShell encoded command execution and lateral movement via PsExec/WMI, mapped to MITRE ATT&CK techniques T1059.001 and T1021. Created a YARA rule for generic malware indicators targeting common malicious API calls, obfuscation strings, and destructive commands.
+
+| Deliverable | File | ATT&CK Mapping |
+|-------------|------|---------------|
+| PowerShell encoded command rule | `03-Threat-Hunting/sigma-rules/suspicious-powershell.yml` | T1059.001 |
+| Lateral movement detection rule | `03-Threat-Hunting/sigma-rules/lateral-movement-detection.yml` | T1021 / T1047 |
+| Generic malware signature | `03-Threat-Hunting/yara-rules/malware-signature.yar` | — |
 
 #### 6. Incident Response
-- Sample ransomware IR playbook (NIST SP 800-61 aligned)
-- Forensic timeline reconstruction from Windows artifacts
-- Malware analysis report (static + dynamic analysis)
-- [Link to IR projects](./05-Incident-Response/)
+Developed a ransomware incident response playbook aligned to NIST SP 800-61 covering all six phases from preparation through lessons learned. Reconstructed a forensic timeline from Windows artifacts (event logs, registry, prefetch) demonstrating a suspected data exfiltration scenario. Wrote a malware analysis report covering static analysis (strings, imports, PE sections) and dynamic sandbox behavior with full IOC extraction.
 
-### 📜 Certifications
-- CompTIA Security+ (Expected [Date])
-- TryHackMe Pre-Security Path
-- TryHackMe Complete Beginner Path
-- TryHackMe SOC Level 1
-
-### 📞 Contact
-- GitHub: [@A-dexter-janx](https://github.com/A-dexter-janx)
+| Deliverable | File |
+|-------------|------|
+| Ransomware IR playbook (NIST-aligned) | `05-Incident-Response/sample-ir-playbook.md` |
+| Forensic timeline reconstruction | `05-Incident-Response/forensic-timeline.csv` |
+| Malware analysis report (static + dynamic) | `05-Incident-Response/malware-analysis-report.md` |
 
 ---
 
-## Repository Structure
+### 📜 Certifications
+
+| Certification | Status |
+|---------------|--------|
+| CompTIA Security+ | Expected [Date] |
+| TryHackMe — Pre-Security Path | Completed |
+| TryHackMe — Complete Beginner Path | Completed |
+| TryHackMe — SOC Level 1 | Completed |
+
+Badge evidence: `Certs-Badges/TryHackMe-Badges.png`
+
+---
+
+### 📞 Contact
+
+- **GitHub:** [@A-dexter-janx](https://github.com/A-dexter-janx)
+- **Resume:** `resume-cybersecurity.pdf`
+
+---
+
+### Repository Structure
 
 ```
 Security-Plus-Lab-Portfolio/
-├── 01-Network-Security/          # Firewall rules, packet analysis, network diagrams
-├── 02-SIEM-Projects/             # Splunk alerts, Elastic Stack configs
-├── 03-Threat-Hunting/           # Sigma rules, YARA signatures
-├── 04-Vulnerability-Management/ # Nessus reports, Nmap scripts, remediation
-├── 05-Incident-Response/        # IR playbooks, forensic timelines, malware analysis
-├── 06-Python-Tools/             # Security automation scripts
-├── Certs-Badges/                # Certificates and learning badges
-├── README.md                    # This file
-└── resume-cybersecurity.pdf     # Resume (add once ready)
+├── 01-Network-Security/
+│   ├── firewall-rules-pfsense.md
+│   ├── wireshark-capture-analysis.pcapng
+│   └── network-diagram.png
+├── 02-SIEM-Projects/
+│   ├── README.md
+│   ├── splunk-alert-config/
+│   │   ├── brute-force-detection.spl
+│   │   └── malware-c2-alert.spl
+│   └── elastic-stack/
+│       ├── winlogbeat-config.yml
+│       └── kibana-dashboard-export.json
+├── 03-Threat-Hunting/
+│   ├── sigma-rules/
+│   │   ├── suspicious-powershell.yml
+│   │   └── lateral-movement-detection.yml
+│   └── yara-rules/
+│       └── malware-signature.yar
+├── 04-Vulnerability-Management/
+│   ├── nessus-report-analysis.md
+│   ├── nmap-scan-scripts/
+│   │   └── comprehensive-scan.sh
+│   └── remediation-recommendations.docx
+├── 05-Incident-Response/
+│   ├── sample-ir-playbook.md
+│   ├── forensic-timeline.csv
+│   └── malware-analysis-report.md
+├── 06-Python-Tools/
+│   ├── port-scanner.py
+│   ├── log-analyzer.py
+│   └── hash-checker.py
+├── Certs-Badges/
+│   ├── Security-Plus-Certificate.pdf
+│   └── TryHackMe-Badges.png
+├── README.md
+└── resume-cybersecurity.pdf
 ```
 
-## Quick Start
-1. Clone the repo
-2. Navigate to each section folder for project-specific details
-3. Replace placeholder files with your actual lab results and screenshots
-4. Commit regularly to show activity and progression
+---
+
+*Portfolio built incrementally. Replace placeholder files with your real lab results, screenshots, and certificates as you complete each project. Commit regularly to show activity and progression.*

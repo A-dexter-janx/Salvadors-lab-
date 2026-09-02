@@ -1,30 +1,11 @@
-# Forensic Timeline
-## Incident Response: Timeline Reconstruction
-
-### Incident: Suspected Data Exfiltration
-
-### Timeline (UTC)
-| Time | Event | Source | Evidence |
-|------|-------|--------|----------|
-| 2026-08-15 09:12:00 | User logs in normally | Security Log (4624) | Event Log |
-| 2026-08-15 09:15:30 | USB device connected | Setup Log (2003) | Event Log |
-| 2026-08-15 09:16:00 | Large file copy to USB | Shellbags, MRU | Registry, Prefetch |
-| 2026-08-15 09:20:00 | Strange PowerShell process spawned | Sysmon (Event 1) | EDR Log |
-| 2026-08-15 09:20:05 | Base64 encoded command executed | PowerShell logs (4104) | PS Log |
-| 2026-08-15 09:21:00 | Outbound HTTPS to unknown IP | Firewall log | Firewall |
-| 2026-08-15 09:21:05 | Data exfiltration suspected (50MB+) | Network flow logs | NetFlow |
-| 2026-08-15 09:25:00 | User locks workstation | Security Log (4800) | Event Log |
-| 2026-08-15 10:00:00 | SOC alert: anomalous outbound traffic | SIEM alert | Splunk |
-
-### Key Questions to Answer
-1. Was the user aware of the activity?
-2. Was the USB device authorized?
-3. Did the PowerShell command achieve its intent?
-4. How much data was exfiltrated?
-
-### Forensic Artifacts to Examine
-- `$MFT` for file access times
-- Registry: `USBSTOR`, `SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
-- Prefetch files for program execution evidence
-- Browser history and downloads
-- LNK files and Jump Lists
+Time (UTC),Event,Artifact Source,Key Evidence
+2026-08-15 09:12:00,User Mary logged into workstation normally (interactive logon),Security Log Event ID 4624 (Logon Type 2),Successful logon, no anomalies
+2026-08-15 09:15:30,USB storage device connected to the workstation,SetupLog Event ID 2003 + USBSTOR registry key,Device ID and vendor recorded, first connection time
+2026-08-15 09:16:00,Large file copy from Documents folder to USB drive,Shellbags (CSB) + MRU registry + $MFT access times,File path and size, access time on mounted USB
+2026-08-15 09:20:00,Suspicious PowerShell process spawned by user context,Sysmon Event ID 1 (Process Create) + EDR telemetry,Command line: base64-encoded payload, -WindowStyle Hidden
+2026-08-15 09:20:05,PowerShell executed encoded command — decoded to outbound HTTPS with data payload,PowerShell Script Block Logging Event ID 4104 + transcript logs,Decoded command shows data staging and exfil POST request
+2026-08-15 09:21:00,Outbound HTTPS connection to unknown external IP (185.220.101.45) — 50+ MB in 60 seconds,Firewall log + NetFlow,Source: workstation, Dest: 185.220.101.45:443, bytes: 52341234
+2026-08-15 09:21:05,Data exfiltration likely complete — volume and timing consistent with bulk transfer,Network flow analysis,Sustained high-volume HTTPS, no normal browsing pattern
+2026-08-15 09:25:00,User locked workstation (Win+L) — appears normal, exfil already complete,Security Log Event ID 4800 (Workstation locked),Routine action, no sign of user awareness
+2026-08-15 10:00:00,SOC alert generated — anomalous outbound traffic threshold exceeded,Splunk alert — NetFlow data,50+ MB to single external IP in under 2 minutes flagged
+2026-08-15 10:05:00,SOC analyst begins investigation — identifies workstation, user, exfil pattern,SOC ticket,Investigation started
