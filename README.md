@@ -202,7 +202,6 @@ Security-Plus-Lab-Portfolio/
 │       └── malware-signature.yar         # generic malware indicators
 ├── 04-Vulnerability-Management/
 │   ├── nessus-report-analysis.md        # CVE-level findings + prioritization
-│   ├── remediation-recommendations.docx # prioritized remediation plan
 │   └── nmap-scan-scripts/
 │       └── comprehensive-scan.sh        # staged network scan automation
 ├── 05-Incident-Response/
@@ -213,6 +212,17 @@ Security-Plus-Lab-Portfolio/
 │   ├── port-scanner.py                  # threaded TCP connect scanner
 │   ├── log-analyzer.py                  # auth/log triage with pattern detection
 │   └── hash-checker.py                  # multi-algorithm hash + verify
+├── 07-Incident-Case-Study/
+│   ├── README.md                         # Nancy/Amatera real incident case study
+│   └── nancy-amatera/
+│       ├── VICTIM_REPORT.md             # Main incident narrative
+│       ├── IOCs.md                      # Full indicator dossier
+│       ├── EVIDENCE_LOG.md              # Chain of custody
+│       ├── sha256_manifest.txt          # Payload file hashes
+│       ├── UpdateService_task.xml       # Scheduled task persistence export
+│       ├── detection_history/           # 5 raw Defender DetectionHistory records
+│       ├── nancy_amatera_detection_rules.yml  # 5 Sigma rules (EtherHiding, MSBuild LOLBIN, persistence, BAT stager, WPA.exe)
+│       └── nancy_amatera_ioc_scanner.py       # Python IOC scanner
 ├── Certs-Badges/
 │   ├── Security-Plus-Certificate.pdf    # Security+ cert (pending)
 │   └── TryHackMe-Badges.png            # TryHackMe path badges
