@@ -1,0 +1,191 @@
+title: Nancy/Amatera Stealer — EtherHiding C2 via BSC JSON-RPC
+id: Nancy-Amera-2026-08-25-001
+status: test
+description: >
+  Detects the EtherHiding C2 pattern used by the Nancy/Amatera stealer incident (2026-08-25).
+  The malware retrieves C2 data by calling JSON-RPC eth_call to BSC nodes
+  (bsc-dataseed.binance.org) targeting contract 0x328a1fadff154290f0ce1389a4e633698cdfdaa7
+  with selector 0x06fdde03. This is an uncommon behavior for legitimate software and strongly
+  indicates the Amatera/RenPy loader chain. The rule covers the C2 retrieval phase.
+  For full coverage, combine with the execution-stage rules in nancy_amatera_execution.yml.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/A-dexter-janx/Salvadors-lab-/blob/Lab-Portfolio/07-Incident-Case-Study/nancy-amatera/IOCs.md
+tags:
+  - attack.command_and_control
+  - attack.t1102.002
+  - attack.t1071.001
+  - nancy-amatera
+  - etherhiding
+logsource:
+  category: web_server
+  service: aws/cloudwatch
+detection:
+  selection_eth_call:
+    Network.Traffic.Context|contains|all:
+      - 'eth_call'
+      - '0x328a1fadff154290f0ce1389a4e633698cdfdaa7'
+  selection_selector:
+    Network.Traffic.Context|contains|all:
+      - '0x06fdde03'
+  selection_bsc:
+    Destination.Address|startswith:
+      - 'bsc-dataseed'
+      - 'bsc-mainnet'
+  condition: selection_eth_call and selection_selector and selection_bsc
+falsepositives:
+  - Legitimate BSC interaction from a wallet app or dApp (rare on a workstation)
+  - Blockchain developer tools querying BSC contracts
+level: critical
+---
+title: Nancy/Amatera — MSBuild LOLBIN with Nancy .csproj execution
+id: Nancy-Amera-2026-08-25-002
+status: test
+description: >
+  Detects MSBuild execution of Nancy*.csproj project files — the LOLBIN chain used by the
+  RenPy/PavinLoader to Amatera loader in the 2026-08-25 incident. The malware uses MSBuild
+  with MSBUILDENABLEALLPROPERTYFUNCTIONS=1 to execute trojanized Nancy.csproj project files
+  as a LOLBIN technique (T1559.003). This rule fires on MSBuild processes loading or executing
+  Nancy-prefixed project files or targets.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/A-dexter-janx/Salvadors-lab-/blob/Lab-Portfolio/07-Incident-Case-Study/nancy-amatera/IOCs.md
+tags:
+  - attack.execution
+  - attack.t1559.003
+  - attack.defense_evasion
+  - nancy-amatera
+  - lolbin
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_msbuild:
+    Image|endswith|contains:
+      - '\MSBuild.exe'
+  selection_nancy_csproj:
+    CommandLine|contains|all:
+      - 'Nancy'
+      - '.csproj'
+  selection_nancy_targets:
+    CommandLine|contains|all:
+      - 'Nancy.Compile.targets'
+  selection_nancy_dir:
+    CommandLine|contains|startswith:
+      - 'Caches\\Nancy\\'
+      - 'AppData\\Local\\Microsoft\\Windows\\Caches\\Nancy'
+  condition: selection_msbuild and (selection_nancy_csproj or selection_nancy_targets or selection_nancy_dir)
+falsepositives:
+  - Legitimate NancyFX/Nancy project builds — rare on a workstation, more likely on a dev machine
+  - Tuning: exclude known dev machines and known legitimate Nancy projects
+level: critical
+---
+title: Nancy/Amatera — Hidden scheduled task UpdateService persistence
+id: Nancy-Amera-2026-08-25-003
+status: test
+description: >
+  Detects the hidden scheduled task UpdateService used for persistence by the Nancy/Amatera
+  stealer in the 2026-08-25 incident. The task has a logon trigger and executes cmd.exe
+  to run sync_afc1.cmd from the Nancy cache directory. This rule can be deployed as a Sigma
+  rule (scheduled task creation/modification) or as a scheduled check that queries the task
+  registration and alerts on its presence.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/A-dexter-janx/Salvadors-lab-/blob/Lab-Portfolio/07-Incident-Case-Study/nancy-amatera/UpdateService_task.xml
+tags:
+  - attack.persistence
+  - attack.t1053.005
+  - nancy-amatera
+  - scheduled_task
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_task:
+    CommandLine|contains|all:
+      - 'schtasks'
+      - '/Create'
+      - 'UpdateService'
+  selection_sync:
+    CommandLine|contains|all:
+      - 'UpdateService'
+      - 'sync_afc1.cmd'
+  selection_nancy_path:
+    CommandLine|contains:
+      - 'AppData\\Local\\Microsoft\\Windows\\Caches\\Nancy'
+      - 'Caches\\Nancy\\sync_afc1.cmd'
+  condition: selection_task or (selection_sync and selection_nancy_path)
+falsepositives:
+  - Legitimate software that creates a task named UpdateService (rare — this exact name plus Nancy path combination is highly suspicious)
+  - Tuning: exclude known legitimate UpdateService tasks if any exist in the environment
+level: critical
+---
+title: Nancy/Amatera — sync_afc1.cmd hidden BAT stager
+id: Nancy-Amera-2026-08-25-004
+status: test
+description: >
+  Detects execution of the hidden BAT stager sync_afc1.cmd used by the Nancy/Amatera loader.
+  This file was located in the Nancy cache directory and executed via the UpdateService
+  scheduled task at every logon.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/A-dexter-janx/Salvadors-lab-/blob/Lab-Portfolio/07-Incident-Case-Study/nancy-amatera/IOCs.md
+tags:
+  - attack.execution
+  - attack.t1059.003
+  - nancy-amatera
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_cmd:
+    Image|endswith: '\cmd.exe'
+    CommandLine|contains: 'sync_afc1.cmd'
+  selection_nancy:
+    CommandLine|contains|startswith:
+      - 'Caches\\Nancy\\sync_afc1.cmd'
+      - 'AppData\\Local\\Microsoft\\Windows\\Caches\\Nancy\\sync_afc1.cmd'
+  condition: selection_cmd and selection_nancy
+falsepositives:
+  - Extremely rare — sync_afc1.cmd is a malware-specific filename. Any execution of this file is suspicious.
+level: critical
+---
+title: Nancy/Amatera — Amatera stealer WPA.exe from Nancy cache
+id: Nancy-Amera-2026-08-25-005
+status: test
+description: >
+  Detects the Amatera stealer payload executing as WPA.exe from the Nancy cache directory.
+  In the 2026-08-25 incident, the final payload stage ran as WPA.exe from
+  %LOCALAPPDATA%\Microsoft\Windows\Caches\Nancy.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/A-dexter-janx/Salvadors-lab-/blob/Lab-Portfolio/07-Incident-Case-Study/nancy-amatera/IOCs.md
+tags:
+  - attack.execution
+  - attack.t1059.003
+  - nancy-amatera
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_wpa:
+    Image|endswith: '\WPA.exe'
+  selection_nancy:
+    CommandLine|contains|startswith:
+      - 'Caches\\Nancy'
+      - 'AppData\\Local\\Microsoft\\Windows\\Caches\\Nancy'
+  condition: selection_wpa and selection_nancy
+falsepositives:
+  - WPA.exe is a legitimate Windows Printer Admin tool in some contexts — combined with the Nancy cache path, this is malware
+  - Tuning: flag only when WPA.exe runs from the Nancy cache directory
+level: high

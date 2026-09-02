@@ -40,10 +40,12 @@ I am working toward CompTIA Security+ and building practical depth through home-
 
 | metric | value |
 |--------|-------|
-| MITRE ATT&CK techniques mapped | T1059.001, T1021, T1047, T1105, T1071.001, T1048, T1567, T1486 |
-| Sigma rules written | 2 (with hunting hypotheses and FP analysis) |
-| YARA rules written | 1 (generic malware indicators with API-call and string coverage) |
-| Splunk detection alerts | 2 (brute force, C2 DNS) with tuning notes |
+|| MITRE ATT&CK techniques mapped | T1059.001, T1021, T1047, T1105, T1071.001, T1048, T1567, T1486, T1559.003, T1555.003, T1562.001, T1573, T1102.002, T1204.002, T1566.001, T1053.005, T1547.001, T1027, T1190, T1068, T1557, T1055, T1485, T1072 |
+|| Sigma rules written | 7 (2 generic hunting + 5 Nancy/Amatera-specific for C2, MSBuild LOLBIN, scheduled task persistence, BAT stager, WPA.exe payload) |
+|| YARA rules written | 1 (generic malware indicators with API-call and string coverage) |
+|| Splunk detection alerts | 2 (brute force, C2 DNS) with tuning notes |
+|| Live IOC scanner | 1 (Python — scheduled tasks, files, registry, event logs, hash scan, C2 indicators) |
+|| Sigma rules tested against | Real Defender DetectionHistory records from 2026-08-25 incident |
 | Python tools delivered | 3 (port scanner, log analyzer, hash checker — all functional) |
 | NIST IR playbook phases covered | 6 of 6 (Preparation → Lessons Learned) |
 | Firewall interfaces designed | 3 (WAN, LAN, DMZ) with default-deny posture |
@@ -142,6 +144,25 @@ See: `05-Incident-Response/sample-ir-playbook.md`, `05-Incident-Response/forensi
 These are functional, tested tools — not stubs. Every one runs from the command line with documented arguments.
 
 See: `06-Python-Tools/`
+
+---
+
+### 7. Incident Case Study — Nancy / Amatera Stealer (real compromise)
+
+> **This is not a lab simulation. A real infostealer compromised this machine.**
+>
+> On 2026-08-23, a fake "SamFw FRP Tool v5.5.1 Setup" from `frptoolsdownload.com` delivered a multi-stage loader (RenPy/PavinLoader → Wacatac → MSBuild LOLBIN) that deployed the Amatera stealer in memory. The malware persisted via a hidden scheduled task (`\\UpdateService`, logon trigger), exfiltrated browser credentials, session tokens, and autofill data, and used **EtherHiding over Binance Smart Chain** for C2 — storing encrypted blobs on a BSC smart contract and retrieving them via JSON-RPC.
+
+**What the investigation produced:**
+
+- **Full delivery chain recovered** — down to the terminal payload URL (`d8baab0c37a0454d6f22ad4c.192169482.com/675ab055f00e5d1087ae481e21d24a`), decoded from the gate's base64 JSON. Unpublished infrastructure as of 2026-08-25.
+- **Blockchain time-travel C2 proof** — BSC archive node reads at blocks 117684888, ~117784311, ~117976228 show **four distinct 54-byte encrypted blobs**, proving per-session C2 rotation. Block numbers preserved for future key recovery.
+- **Real evidence with provenance** — Defender DetectionHistory records (5 files, raw binary), scheduled task XML export, SHA256 payload manifest (8 files), Firefox `places.sqlite` gate decode, chain-of-custody log.
+- **Actual IR performed** — evidence collected, eradication executed (process kill, task deletion, payload shredded with 3-pass overwrite), credentials rotated.
+
+**ATT&CK coverage:** T1566.001, T1204.002, T1562.001, T1027, T1059.003, T1559.003, T1053.005, T1547.001, T1555.003, T1567, T1071.001, T1102.002, T1573.002.
+
+See: `07-Incident-Case-Study/README.md`, `07-Incident-Case-Study/nancy-amatera/`
 
 ---
 
