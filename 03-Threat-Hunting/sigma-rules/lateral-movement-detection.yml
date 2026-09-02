@@ -1,0 +1,30 @@
+title: Lateral Movement via PsExec/WMI
+id: b2c3d4e5-f6a7-8901-bcde-f23456789012
+status: experimental
+description: Detects remote execution tools commonly used for lateral movement post-compromise.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://attack.mitre.org/techniques/T1021/
+tags:
+  - attack.lateral_movement
+  - attack.t1021
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_psexec:
+    Image|endswith: '\psexec.exe'
+    CommandLine|contains: '-accepteula'
+  selection_wmi:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains: 'process call create'
+  selection_rpc:
+    Image|endswith: '\net.exe'
+    CommandLine|contains: 'use \\'
+  condition: selection_psexec or selection_wmi or selection_rpc
+falsepositives:
+  - Legitimate administrative remote management
+level: medium

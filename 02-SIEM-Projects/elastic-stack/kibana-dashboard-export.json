@@ -1,0 +1,23 @@
+{
+  "aliases": {
+    "dns-queries": "dns-queries-*"
+  },
+  "index_patterns": [
+    "dns-queries-*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "src_ip": { "type": "ip" },
+        "query": { "type": "keyword" },
+        "response_code": { "type": "integer" },
+        "dns_type": { "type": "keyword" }
+      }
+    }
+  }
+}

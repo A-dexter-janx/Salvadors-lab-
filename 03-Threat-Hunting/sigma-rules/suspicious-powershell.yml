@@ -1,0 +1,26 @@
+title: Suspicious PowerShell Execution - Encoded Commands
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+status: experimental
+description: Detects PowerShell commands using encoded/base64 arguments, commonly used to obfuscate malicious intent.
+author: Salvador Janthan
+date: 2026/09/02
+modified: 2026/09/02
+references:
+  - https://github.com/SigmaHQ/sigma
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains:
+      - '-enc'
+      - '-encodedcommand'
+      - '-e '
+  condition: selection
+falsepositives:
+  - Legitimate admin scripts using encoded commands (rare)
+level: high

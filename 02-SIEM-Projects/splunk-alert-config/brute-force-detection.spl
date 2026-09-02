@@ -1,0 +1,29 @@
+# Splunk Brute Force Detection Alert
+## SIEM Project: Custom Alert Configuration
+
+### Objective
+Create a Splunk alert that detects brute force authentication attempts against SSH and RDP services.
+
+### SPL Query
+```splunk
+index=security sourcetype=winlogbeat_eventlog
+| stats count by src_ip, dest, _time
+| where count > 10
+| eval threshold_exceeded = if(count > 10, "YES", "NO")
+| table src_ip, dest, count, _time
+```
+
+### Alert Configuration
+- **Alert Name:** Brute Force Detection - SSH/RDP
+- **Schedule:** Every 5 minutes
+- **Trigger:** Number of results > 0
+- **Severity:** High
+- **Action:** Email SOC analyst + create ticket
+
+### Threshold Rationale
+- 10+ failed attempts in a 5-minute window indicates automated attack
+- Lower threshold reduces false positives from user typos
+- Baseline: normal user retries average 1-2 per session
+
+### Testing
+Use Hydra or Metasploit auxiliary/scanner/ssh/ssh_login to generate test failures and verify alert triggers.

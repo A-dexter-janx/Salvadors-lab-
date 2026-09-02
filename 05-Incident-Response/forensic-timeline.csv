@@ -1,0 +1,30 @@
+# Forensic Timeline
+## Incident Response: Timeline Reconstruction
+
+### Incident: Suspected Data Exfiltration
+
+### Timeline (UTC)
+| Time | Event | Source | Evidence |
+|------|-------|--------|----------|
+| 2026-08-15 09:12:00 | User logs in normally | Security Log (4624) | Event Log |
+| 2026-08-15 09:15:30 | USB device connected | Setup Log (2003) | Event Log |
+| 2026-08-15 09:16:00 | Large file copy to USB | Shellbags, MRU | Registry, Prefetch |
+| 2026-08-15 09:20:00 | Strange PowerShell process spawned | Sysmon (Event 1) | EDR Log |
+| 2026-08-15 09:20:05 | Base64 encoded command executed | PowerShell logs (4104) | PS Log |
+| 2026-08-15 09:21:00 | Outbound HTTPS to unknown IP | Firewall log | Firewall |
+| 2026-08-15 09:21:05 | Data exfiltration suspected (50MB+) | Network flow logs | NetFlow |
+| 2026-08-15 09:25:00 | User locks workstation | Security Log (4800) | Event Log |
+| 2026-08-15 10:00:00 | SOC alert: anomalous outbound traffic | SIEM alert | Splunk |
+
+### Key Questions to Answer
+1. Was the user aware of the activity?
+2. Was the USB device authorized?
+3. Did the PowerShell command achieve its intent?
+4. How much data was exfiltrated?
+
+### Forensic Artifacts to Examine
+- `$MFT` for file access times
+- Registry: `USBSTOR`, `SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
+- Prefetch files for program execution evidence
+- Browser history and downloads
+- LNK files and Jump Lists
