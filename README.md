@@ -184,7 +184,7 @@ A few things I try to do consistently across every project:
 Security-Plus-Lab-Portfolio/
 ├── 01-Network-Security/
 │   ├── firewall-rules-pfsense.md         # pfSense ACL design + threat model
-│   ├── wireshark-capture-analysis.pcapng # packet capture (replace with real capture)
+│   ├── wireshark-capture-analysis.pcapng # live capture: WAN/DMZ/LAN ACL validation, 23 packets, 12 scenarios
 │   └── network-diagram.png               # segmented network topology
 ├── 02-SIEM-Projects/
 │   ├── README.md                         # SIEM detection engineering overview
@@ -249,13 +249,12 @@ Security-Plus-Lab-Portfolio/
 
 To keep this honest: some deliverables are scaffolding, not final evidence. These are the placeholders I intend to replace with real artifacts as the labs progress:
 
-- `wireshark-capture-analysis.pcapng` — real packet capture from a lab session
 - `Certs-Badges/Security-Plus-Certificate.pdf` — actual certificate PDF
 - `Certs-Badges/TryHackMe-Badges.png` — screenshot of TryHackMe profile/badges
 - `resume-cybersecurity.pdf` — actual resume PDF
 - `screenshots/*` — generated placeholder images that should be replaced with real lab captures
 
-Everything else is written as real content — detection logic, rule definitions, analysis, playbook steps — and is ready for review as-is.
+Everything else is written as real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures — and is ready for review as-is.
 
 ---
 
