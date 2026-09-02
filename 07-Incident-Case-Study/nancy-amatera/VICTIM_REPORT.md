@@ -2,7 +2,7 @@
 
 **Classification:** Victim report / threat intelligence contribution
 **Date of report:** 2026-08-25
-**Reporter:** [NAME], [COUNTRY: South Africa] — [EMAIL], [PHONE]
+**Reporter:** Salvador Janthan, South Africa — salvador@example.com, +27 000 000 0000
 **Status of reporter:** Victim (credentials and session data exfiltrated); system remediated 2026-08-25
 
 ---

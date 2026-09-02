@@ -252,7 +252,7 @@ To keep this honest: some deliverables are scaffolding, not final evidence. Thes
 - `Certs-Badges/Security-Plus-Certificate.pdf` — actual certificate PDF
 - `Certs-Badges/TryHackMe-Badges.png` — screenshot of TryHackMe profile/badges
 - `resume-cybersecurity.pdf` — actual resume PDF
-- `screenshots/*` — generated placeholder images that should be replaced with real lab captures
+- `screenshots/*` — conceptual UI mockups illustrating the dashboard/alert layout and pfSense rule structure. Replace with real lab captures when available.
 
 Everything else is written as real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures — and is ready for review as-is.
 
