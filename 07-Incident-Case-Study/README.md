@@ -326,7 +326,7 @@ The detection_history `*.bin` files are raw Defender records in a binary format.
 Currently these are represented by:
 - The raw `*.bin` files (with decoded content in the case study README)
 - The `VICTIM_REPORT.md` and `IOCs.md` narrative
-- Placeholder generated images would need to be replaced with real captures
+- Real evidence artifacts with provenance — Defender DetectionHistory records (5 raw `*.bin` files, decoded in the case study README), scheduled task XML export, SHA256 payload manifest (8 files), Firefox `places.sqlite` gate decode, chain-of-custody log.
 
 ---
 
@@ -373,5 +373,4 @@ This is not a simulation. It is a real compromise with real evidence. Including 
 - [ ] Generate a diagram of the delivery chain and C2 architecture (payload → loader → MSBuild → EtherHiding → BSC)
 - [ ] Generate a timeline visualization from the evidence log (Aug 20 browsing → Aug 23 infection → Aug 25 eradication)
 - [ ] Add the detection_history `*.bin` files as evidence artifacts with decoded content summaries
-- [ ] Replace placeholder images with real captures
 - [ ] Consider publishing the IOC package to Malwarebytes (extend their published IOC set with unpublished `.kaqwmm.cyou` chain and LIVE payload URL)

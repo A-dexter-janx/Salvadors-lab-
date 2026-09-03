@@ -83,23 +83,4 @@ After applying rules, captured traffic on each interface to validate expected be
 
 ## Screenshots
 
-Replace the placeholder below with an annotated screenshot of the pfSense firewall rule editor showing all rules across WAN, LAN, and DMZ tabs.
-
-**Suggested annotation highlights:**
-- WAN tab: default deny rule and HTTPS pass rule
-- LAN tab: outbound allow rule
-- DMZ tab: restricted LAN access rule and default deny
-
 ```
-![pfSense firewall rules — WAN, LAN, DMZ](screenshots/pfsense-rules-annotated.png)
-```
-
-To capture: log into pfSense web UI → Firewall → Rules → select each interface tab → screenshot the full rule list with rule numbers visible.
-
----
-
-## Lessons Learned
-
-- Explicit default deny rules on every interface make the security posture clear to anyone reviewing the configuration — even if pfSense defaults to deny.
-- Documenting the "why" behind each rule matters as much as the rule itself. A rule numbered 5 on DMZ with no comment is a future troubleshooting liability.
-- Wireshark validation is essential — a rule that looks correct in the UI can still be wrong if NAT or routing is misconfigured. Live traffic capture confirms end-to-end behavior.

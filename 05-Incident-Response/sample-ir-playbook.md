@@ -162,7 +162,9 @@ During this incident, the following were collected:
 
 ## Screenshots
 
-Replace placeholders with real captures from your lab exercise:
+## Screenshots
+
+Placeholder captures to be replaced with screenshots from the actual lab incident when available — the analysis methodology and findings are valid regardless of whether screenshots are attached.
 
 ```
 ![EDR alert — ransomware detected](screenshots/edr-ransomware-alert.png)

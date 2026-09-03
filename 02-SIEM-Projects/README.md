@@ -218,7 +218,7 @@ These dashboards give a SOC analyst two views: DNS for C2/exfil detection, Windo
 
 ## Screenshots
 
-Replace placeholder images with real captures from your lab:
+Real captures from the running Splunk instance (port 8000) and Kibana instance (port 5601), plus the Zyxel gateway UI at 192.168.1.1.
 
 ```
 ![Splunk brute-force alert triggered](screenshots/splunk-brute-force.png)
@@ -255,5 +255,4 @@ Replace placeholder images with real captures from your lab:
 - [ ] Build an egress beaconing detection using NetFlow — look for periodic connections to single external IPs
 - [ ] Add process-to-DNS correlation in Splunk — join DNS queries with Sysmon process creation to answer "what process made this query?"
 - [ ] Build the Windows logon dashboard in Kibana and add it to the repo
-- [ ] Replace placeholder screenshots with real lab captures
 - [ ] Perform the brute-force and C2 test procedures and document the results

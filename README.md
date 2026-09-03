@@ -250,13 +250,16 @@ A few things I try to do consistently across every project:
 │   └── README.md                         # section overview
 ├── 02-SIEM-Projects/
 │   ├── README.md                         # SIEM detection engineering overview
+│   ├── SPLUNK_ALERT_GUIDE.md             # alert deployment steps and verification
 │   ├── splunk-alert-config/
 │   │   ├── brute-force-detection.spl    # T1110 — SSH/RDP brute force
 │   │   └── malware-c2-alert.spl         # T1071.001 / T1567 — C2 DNS
-│   └── elastic-stack/
+│   ├── elastic-stack/
 │       ├── winlogbeat-config.yml        # Windows log forwarder config
 │       └── kibana-dashboard-export.json # DNS dashboard index template
 ├── 03-Threat-Hunting/
+│   ├── README.md                         # threat hunting overview and rule summaries
+│   ├── RULE_VALIDATION.md                # Sigma/YARA rule test evidence against real data
 │   ├── sigma-rules/
 │   │   ├── suspicious-powershell.yml    # T1059.001 — encoded PowerShell
 │   │   └── lateral-movement-detection.yml # T1021 / T1047 — lateral movement
@@ -265,12 +268,15 @@ A few things I try to do consistently across every project:
 ├── 04-Vulnerability-Management/
 │   ├── nessus-report-analysis.md        # CVE-level findings + prioritization
 │   ├── nmap-scan-scripts/
-│   │   └── comprehensive-scan.sh        # staged network scan automation
+│   │   ├── comprehensive-scan.sh        # staged network scan automation
+│   │   └── SCAN_SCRIPT_GUIDE.md         # scan script usage and integration
+│   ├── VM_Inventory.txt                 # lab VM specs and documentation
 │   └── README.md                         # section overview
 ├── 05-Incident-Response/
 │   ├── sample-ir-playbook.md            # 6-phase ransomware IR (NIST-aligned)
 │   ├── forensic-timeline.csv            # Windows artifact timeline reconstruction
 │   ├── malware-analysis-report.md       # static + dynamic malware analysis with IOCs
+│   ├── extortion-email-analysis.md      # Susan ransom extortion scam investigation
 │   └── README.md                         # section overview
 ├── 06-Python-Tools/
 │   ├── port-scanner.py                  # threaded TCP connect scanner
@@ -279,9 +285,10 @@ A few things I try to do consistently across every project:
 │   └── README.md                        # tool documentation and usage
 ├── 07-Incident-Case-Study/
 │   ├── README.md                         # Nancy/Amatera real incident case study
-│   └── nancy-amatera/
+│   ├── nancy-amatera/
 │       ├── VICTIM_REPORT.md             # Main incident narrative
 │       ├── IOCs.md                      # Full indicator dossier
+│       ├── IOC_SCANNER_GUIDE.md         # IOC scanner usage and integration
 │       ├── EVIDENCE_LOG.md              # Chain of custody
 │       ├── sha256_manifest.txt          # Payload file hashes
 │       ├── UpdateService_task.xml       # Scheduled task persistence export
@@ -291,15 +298,15 @@ A few things I try to do consistently across every project:
 ├── screenshots/
 │   ├── pfsense-rules-annotated.png      # Zyxel EMG3525-T50B cable gateway firewall login
 │   ├── splunk-login.png                 # Splunk login page
-│   ├── splunk-summary.png               # Splunk monitoring console
-│   ├── splunk-brute-force.png           # Splunk brute-force search results
-│   ├── splunk_home.png                  # Splunk home dashboard
-│   ├── splunk_search_app.png            # Splunk search app
-│   ├── splunk_app_search.png            # Splunk search interface
-│   ├── kibana-dns-dashboard.png         # Kibana DNS dashboard with query results
-│   ├── kibana_home.png                  # Kibana home
-│   ├── kibana_discover.png              # Kibana Discover with DNS data
-│   └── kibana_dashboard.png             # Kibana Dashboards
+│   ├── splunk-summary.png               # Splunk monitoring console (real, from running instance)
+│   ├── splunk-brute-force.png           # Splunk brute-force search results (real)
+│   ├── splunk_home.png                  # Splunk home dashboard (real)
+│   ├── splunk_search_app.png            # Splunk search app (real)
+│   ├── splunk_app_search.png            # Splunk search interface (real)
+│   ├── kibana-dns-dashboard.png         # Kibana DNS dashboard with query results (real)
+│   ├── kibana_home.png                  # Kibana home (real)
+│   ├── kibana_discover.png              # Kibana Discover with DNS data (real)
+│   └── kibana_dashboard.png             # Kibana Dashboards (real)
 ├── GAP_ANALYSIS.md                       # Living document — gaps found and addressed
 └── README.md                            # this file
 ```
