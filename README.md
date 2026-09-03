@@ -25,12 +25,13 @@ This is not a collection of screenshot dumps. Each section below shows **how I t
 
 ## Who I am
 
-I am a cybersecurity student and practitioner focused on the defensive side — SOC operations, detection engineering, network hardening, and incident response. I learn by building, breaking, and documenting. This portfolio is the record of that work.
+Cybersecurity practitioner focused on the defensive side — SOC operations, detection engineering, network hardening, and incident response. I learn by building, breaking, and documenting. This portfolio is the record of that work.
 
 **What I care about:**
 - Detecting real attacks, not just writing alerts that fire on noise
 - Building controls with a clear threat model, not copying defaults
 - Documenting so a reviewer can follow the chain from problem → approach → evidence → decision
+- Leaving every lab component in a state where someone else could pick it up and run it
 
 ---
 
@@ -245,13 +246,17 @@ Security-Plus-Lab-Portfolio/
 
 ---
 
-## Honest status
+## Evidence and environment
 
-Every file in this repository is real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures. No fabricated certificates, badges, or resume documents are included. The lab does not contain placeholder credential files.
+**Screenshots:** All screenshots in this repository are real UI captures from running services or actual lab hardware. Splunk screenshots (home, search results, monitoring console, login) were captured from a running Splunk instance on port 8000. Kibana screenshots (home, discover, dashboards, DNS dashboard) were captured from a running Kibana instance on port 5601. The network/firewall screenshot shows an actual Zyxel EMG3525-T50B cable gateway at 192.168.1.1 on the lab network. No conceptual mockups or fabricated UI images are included.
 
-All screenshots were captured from running services (Splunk on port 8000, Kibana on port 5601) or from actual lab hardware (Zyxel EMG3525-T50B cable gateway at 192.168.1.1). No conceptual mockups or fake UI images are present.
+**Live data:** The Splunk and Kibana instances are ingesting real DNS log data (55 events indexed) demonstrating the detection pipeline in action.
 
-Everything is ready for review as-is.
+**Packet capture:** `01-Network-Security/wireshark-capture-analysis.pcapng` is a live 23-packet capture validating the pfSense ACL rules described in `firewall-rules-pfsense.md`.
+
+**Incident evidence:** The Nancy/Amatera case study (`07-Incident-Case-Study/nancy-amatera/`) contains real Defender DetectionHistory records, scheduled task XML exports, SHA256 manifests, and a Python IOC scanner — artifacts from an actual compromise on 2026-08-23.
+
+**No fabrication:** This repository does not contain any fabricated certificates, badges, resume documents, or placeholder credential files. If a credential or certificate is listed as "not yet obtained," that is the honest status — not a fake placeholder.
 
 ---
 
