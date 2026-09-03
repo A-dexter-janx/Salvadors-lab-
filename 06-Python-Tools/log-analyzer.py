@@ -17,6 +17,8 @@ import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 
+__version__ = "1.0.0"
+
 # Common patterns for security log analysis
 PATTERNS = {
     "failed_login": re.compile(
@@ -183,7 +185,9 @@ Examples:
                         help="Detect HTTP 5xx errors")
     parser.add_argument("--top-ips", type=int, metavar="N",
                         help="Show top N IPs by activity")
-    
+    parser.add_argument("-v", "--version", action="version",
+                        version=f"log-analyzer.py {__version__} — Security Log Analyzer")
+
     args = parser.parse_args()
     
     if not any([args.summary, args.failed_logins, args.successful_logins,

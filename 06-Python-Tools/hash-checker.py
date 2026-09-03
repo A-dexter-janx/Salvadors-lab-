@@ -16,6 +16,8 @@ import hashlib
 import sys
 from pathlib import Path
 
+__version__ = "1.0.0"
+
 SUPPORTED_ALGORITHMS = {
     "md5": hashlib.md5,
     "sha1": hashlib.sha1,
@@ -99,7 +101,9 @@ Examples:
                         help="Verify against known hashes file")
     parser.add_argument("--all", action="store_true",
                         help="Compute all supported hashes")
-    
+    parser.add_argument("--version", action="version",
+                        version=f"hash-checker.py {__version__} — File Hash Checker")
+
     args = parser.parse_args()
     
     if args.verify:

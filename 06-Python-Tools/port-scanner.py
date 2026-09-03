@@ -17,6 +17,8 @@ import concurrent.futures
 import sys
 from datetime import datetime
 
+__version__ = "1.0.0"
+
 COMMON_PORTS = {
     21: "FTP",
     22: "SSH",
@@ -100,7 +102,9 @@ Examples:
                         help="Number of concurrent threads (default: 100)")
     parser.add_argument("-t", "--timeout", type=float, default=3.0,
                         help="Socket timeout in seconds (default: 3.0)")
-    
+    parser.add_argument("-v", "--version", action="version",
+                        version=f"port-scanner.py {__version__} — TCP connect scanner")
+
     args = parser.parse_args()
     
     ports = parse_port_range(args.ports)
