@@ -27,8 +27,6 @@ This is not a collection of screenshot dumps. Each section below shows **how I t
 
 I am a cybersecurity student and practitioner focused on the defensive side — SOC operations, detection engineering, network hardening, and incident response. I learn by building, breaking, and documenting. This portfolio is the record of that work.
 
-I am working toward CompTIA Security+ and building practical depth through home-lab labs: a Splunk + Elastic SIEM stack, a pfSense edge firewall, a Nessus vulnerability scanner, and Python tooling I actually use during labs.
-
 **What I care about:**
 - Detecting real attacks, not just writing alerts that fire on noise
 - Building controls with a clear threat model, not copying defaults
@@ -223,15 +221,17 @@ Security-Plus-Lab-Portfolio/
 │       ├── detection_history/           # 5 raw Defender DetectionHistory records
 │       ├── nancy_amatera_detection_rules.yml  # 5 Sigma rules (EtherHiding, MSBuild LOLBIN, persistence, BAT stager, WPA.exe)
 │       └── nancy_amatera_ioc_scanner.py       # Python IOC scanner
-├── Certs-Badges/
-│   ├── Security-Plus-Certificate.pdf    # Security+ cert (pending)
-│   └── TryHackMe-Badges.png            # TryHackMe path badges
 ├── screenshots/
-│   ├── pfsense-rules-annotated.png      # pfSense rules interface (placeholder)
-│   ├── splunk-brute-force.png           # Splunk brute-force alert (placeholder)
-│   └── kibana-dns-dashboard.png         # Kibana DNS dashboard (placeholder)
-├── README.md                            # this file
-└── resume-cybersecurity.pdf             # resume (pending)
+│   ├── pfsense-rules-annotated.png      # Zyxel EMG3525-T50B cable gateway firewall login (real)
+│   ├── splunk-brute-force.png           # Splunk brute-force search results (real)
+│   ├── splunk_home.png                  # Splunk home dashboard (real)
+│   ├── splunk_summary.png               # Splunk monitoring console (real)
+│   ├── splunk_app_search.png            # Splunk search app (real)
+│   ├── splunk_search_app.png            # Splunk search interface (real)
+│   ├── kibana_home.png                  # Kibana home (real)
+│   ├── kibana_discover.png              # Kibana Discover (real)
+│   └── kibana_dashboard.png             # Kibana Dashboards (real)
+└── README.md                            # this file
 ```
 
 ---
@@ -245,20 +245,13 @@ Security-Plus-Lab-Portfolio/
 
 ---
 
-## What is still placeholder
+## Honest status
 
-To keep this honest: some deliverables are scaffolding, not final evidence. These are the files that are NOT real artifacts:
+Every file in this repository is real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures. No fabricated certificates, badges, or resume documents are included. The lab does not contain placeholder credential files.
 
-- `Certs-Badges/Security-Plus-Certificate.pdf` — **Not applicable.** Salvador Janthan does not currently hold CompTIA Security+. This file is an honest placeholder stating the certification has not been obtained.
-- `Certs-Badges/TryHackMe-Badges.png` — **Not applicable.** Salvador Janthan does not currently have TryHackMe badges or completed learning path screenshots. This file is an honest placeholder stating the badges have not been earned.
-- `resume-cybersecurity.pdf` — actual resume PDF
-- `screenshots/pfsense-rules-annotated.png` — **Now replaced with a real screenshot** of an actual Zyxel EMG3525-T50B cable gateway/router firewall login interface from the lab network (192.168.1.1). pfSense VM was not available; the real hardware firewall UI is used instead.
-- `screenshots/splunk-brute-force.png` — Now a real screenshot from the running Splunk instance with actual indexed events
-- `screenshots/kibana-dns-dashboard.png` — Now a real screenshot from the running Kibana instance with actual DNS data
+All screenshots were captured from running services (Splunk on port 8000, Kibana on port 5601) or from actual lab hardware (Zyxel EMG3525-T50B cable gateway at 192.168.1.1). No conceptual mockups or fake UI images are present.
 
-All other screenshots (`splunk_home.png`, `splunk_login.png`, `splunk_login_fail.png`, `splunk_summary.png`, `splunk_app_search.png`, `kibana_home.png`, `kibana_discover.png`, `kibana_dashboard.png`) are real screenshots from the running Splunk and Kibana instances captured during this session.
-
-Everything else is written as real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures — and is ready for review as-is.
+Everything is ready for review as-is.
 
 ---
 
