@@ -247,12 +247,16 @@ Security-Plus-Lab-Portfolio/
 
 ## What is still placeholder
 
-To keep this honest: some deliverables are scaffolding, not final evidence. These are the placeholders I intend to replace with real artifacts as the labs progress:
+To keep this honest: some deliverables are scaffolding, not final evidence. These are the files that are NOT real artifacts:
 
-- `Certs-Badges/Security-Plus-Certificate.pdf` — actual certificate PDF
-- `Certs-Badges/TryHackMe-Badges.png` — screenshot of TryHackMe profile/badges
+- `Certs-Badges/Security-Plus-Certificate.pdf` — **Not applicable.** Salvador Janthan does not currently hold CompTIA Security+. This file is an honest placeholder stating the certification has not been obtained.
+- `Certs-Badges/TryHackMe-Badges.png` — **Not applicable.** Salvador Janthan does not currently have TryHackMe badges or completed learning path screenshots. This file is an honest placeholder stating the badges have not been earned.
 - `resume-cybersecurity.pdf` — actual resume PDF
-- `screenshots/*` — conceptual UI mockups illustrating the dashboard/alert layout and pfSense rule structure. Replace with real lab captures when available.
+- `screenshots/pfsense-rules-annotated.png` — **Now replaced with a real screenshot** of an actual Zyxel EMG3525-T50B cable gateway/router firewall login interface from the lab network (192.168.1.1). pfSense VM was not available; the real hardware firewall UI is used instead.
+- `screenshots/splunk-brute-force.png` — Now a real screenshot from the running Splunk instance with actual indexed events
+- `screenshots/kibana-dns-dashboard.png` — Now a real screenshot from the running Kibana instance with actual DNS data
+
+All other screenshots (`splunk_home.png`, `splunk_login.png`, `splunk_login_fail.png`, `splunk_summary.png`, `splunk_app_search.png`, `kibana_home.png`, `kibana_discover.png`, `kibana_dashboard.png`) are real screenshots from the running Splunk and Kibana instances captured during this session.
 
 Everything else is written as real content — detection logic, rule definitions, analysis, playbook steps, and live packet captures — and is ready for review as-is.
 
